@@ -14,12 +14,13 @@ header hdrtype_t {
     bit<8> input_or_internal;
 }
 header input_t {
-    string_t str1;
-    string_t str2;
+    string_t str_a;
+    string_t str_b;
 }
 
 header internal_t {
-    bit<32> iterator;
+    bit<32> iterator_l;
+    bit<32> iterator_r;
     bit<32> highest_count;
     string_t matrix_l0;
     string_t matrix_l1;
@@ -94,6 +95,37 @@ control MyIngress(inout headers hdr,
     
     action test_action(egressSpec_t port) {
         standard_metadata.egress_spec = port;
+    }
+
+    action update_indices (){
+        hdr.internal_header.iterator_r += 1;
+        if(hdr.internal_header.iterator_r == 8){
+            hdr.internal_header.iterator_r = 0;
+            hdr.internal_header.iterator_l += 1;
+        }
+        if(hdr.internal_header.iterator_l == 8){
+            convert_to_output();
+        }
+    }
+
+    action convert_to_internal(){
+        hdr.internal_header.iterator_l = 0;
+        hdr.internal_header.iterator_r = 0;
+        hdr.internal_header.highest_count = 0;
+        hdr.internal_header.matrix_l0 = 0;
+        hdr.internal_header.matrix_l1 = 0;
+        hdr.internal_header.matrix_l2 = 0;
+        hdr.internal_header.matrix_l3 = 0;
+        hdr.internal_header.matrix_l4 = 0;
+        hdr.internal_header.matrix_l5 = 0;
+        hdr.internal_header.matrix_l6 = 0;
+        hdr.internal_header.matrix_l7 = 0;
+
+    }
+
+    action convert_to_output(){
+        hdr.internal_header.setInvalid();
+        hdr.type_header.input_or_internal = 0;
     }
     table test_table {
         key = {
