@@ -91,6 +91,165 @@ control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
 **************  I N G R E S S   P R O C E S S I N G   *******************
 *************************************************************************/
 
+control IncrementCount(inout headers hdr,
+                  inout metadata meta,
+                  inout standard_metadata_t standard_metadata)
+{
+    bit<3> diagonal_index_in_bytes;
+    bit<8> diagonal_index_in_bits;
+    bit<8> temp_count;
+    bit<64> temp_value;
+    action set_l0_count(string_t val)
+    {
+        hdr.internal_header.matrix_l0 = hdr.internal_header.matrix_l0 | val;
+    }
+    action set_l1_first()
+    {
+        hdr.internal_header.matrix_l1 = hdr.internal_header.matrix_l1 | 1;
+    }
+    action set_l2_first()
+    {
+        hdr.internal_header.matrix_l2 = hdr.internal_header.matrix_l2 | 1;
+    }
+    action set_l3_first()
+    {
+        hdr.internal_header.matrix_l3 = hdr.internal_header.matrix_l3 | 1;
+    }
+    action set_l4_first()
+    {
+        hdr.internal_header.matrix_l4 = hdr.internal_header.matrix_l4 | 1;
+    }
+    action set_l5_first()
+    {
+        hdr.internal_header.matrix_l5 = hdr.internal_header.matrix_l5 | 1;
+    }
+    action set_l6_first()
+    {
+        hdr.internal_header.matrix_l6 = hdr.internal_header.matrix_l6 | 1;
+    }
+    action set_l7_first()
+    {
+        hdr.internal_header.matrix_l7 = hdr.internal_header.matrix_l7 | 1;
+    }
+    action increment_l1_count()
+    {
+        diagonal_index_in_bytes = (bit<3>) hdr.internal_header.iterator_r; // get the current line index
+        diagonal_index_in_bytes = diagonal_index_in_bytes + 7;             // get the corresponding diagonal index from last line
+        diagonal_index_in_bits = (bit<8>) diagonal_index_in_bytes << 3;    // multiply by 8 to shift in bytes resolution
+        temp_count = ((bit<8>) (hdr.internal_header.matrix_l0 >> diagonal_index_in_bits) & 0xff) + 1; // compute the new value to write in the matrix
+
+        diagonal_index_in_bits =  (bit<8>)hdr.internal_header.iterator_r << 3; // calculate where to put the resulting count in the matrix line
+        temp_value = ((bit<64>) temp_count) << diagonal_index_in_bits; // calculate the value over 64b
+
+        hdr.internal_header.matrix_l1 = temp_value | hdr.internal_header.matrix_l1;
+    }
+    action increment_l2_count()
+    {
+        diagonal_index_in_bytes = (bit<3>) hdr.internal_header.iterator_r; // get the current line index
+        diagonal_index_in_bytes = diagonal_index_in_bytes + 7;             // get the corresponding diagonal index from last line
+        diagonal_index_in_bits = (bit<8>) diagonal_index_in_bytes << 3;    // multiply by 8 to shift in bytes resolution
+        temp_count = ((bit<8>) (hdr.internal_header.matrix_l1 >> diagonal_index_in_bits) & 0xff) + 1; // compute the new value to write in the matrix
+
+        diagonal_index_in_bits =  (bit<8>)hdr.internal_header.iterator_r << 3; // calculate where to put the resulting count in the matrix line
+        temp_value = ((bit<64>) temp_count) << diagonal_index_in_bits; // calculate the value over 64b
+
+        hdr.internal_header.matrix_l2 = temp_value | hdr.internal_header.matrix_l2;
+    }
+
+    action increment_l3_count()
+    {
+        diagonal_index_in_bytes = (bit<3>) hdr.internal_header.iterator_r; // get the current line index
+        diagonal_index_in_bytes = diagonal_index_in_bytes + 7;             // get the corresponding diagonal index from last line
+        diagonal_index_in_bits = (bit<8>) diagonal_index_in_bytes << 3;    // multiply by 8 to shift in bytes resolution
+        temp_count = ((bit<8>) (hdr.internal_header.matrix_l2 >> diagonal_index_in_bits) & 0xff) + 1; // compute the new value to write in the matrix
+
+        diagonal_index_in_bits =  (bit<8>)hdr.internal_header.iterator_r << 3; // calculate where to put the resulting count in the matrix line
+        temp_value = ((bit<64>) temp_count) << diagonal_index_in_bits; // calculate the value over 64b
+
+        hdr.internal_header.matrix_l3 = temp_value | hdr.internal_header.matrix_l3;
+    }
+    action increment_l4_count()
+    {
+        diagonal_index_in_bytes = (bit<3>) hdr.internal_header.iterator_r; // get the current line index
+        diagonal_index_in_bytes = diagonal_index_in_bytes + 7;             // get the corresponding diagonal index from last line
+        diagonal_index_in_bits = (bit<8>) diagonal_index_in_bytes << 3;    // multiply by 8 to shift in bytes resolution
+        temp_count = ((bit<8>) (hdr.internal_header.matrix_l3 >> diagonal_index_in_bits) & 0xff) + 1; // compute the new value to write in the matrix
+
+        diagonal_index_in_bits =  (bit<8>)hdr.internal_header.iterator_r << 3; // calculate where to put the resulting count in the matrix line
+        temp_value = ((bit<64>) temp_count) << diagonal_index_in_bits; // calculate the value over 64b
+
+        hdr.internal_header.matrix_l4 = temp_value | hdr.internal_header.matrix_l4;
+    }
+
+    action increment_l5_count()
+    {
+        diagonal_index_in_bytes = (bit<3>) hdr.internal_header.iterator_r; // get the current line index
+        diagonal_index_in_bytes = diagonal_index_in_bytes + 7;             // get the corresponding diagonal index from last line
+        diagonal_index_in_bits = (bit<8>) diagonal_index_in_bytes << 3;    // multiply by 8 to shift in bytes resolution
+        temp_count = ((bit<8>) (hdr.internal_header.matrix_l4 >> diagonal_index_in_bits) & 0xff) + 1; // compute the new value to write in the matrix
+
+        diagonal_index_in_bits =  (bit<8>)hdr.internal_header.iterator_r << 3; // calculate where to put the resulting count in the matrix line
+        temp_value = ((bit<64>) temp_count) << diagonal_index_in_bits; // calculate the value over 64b
+
+        hdr.internal_header.matrix_l5 = temp_value | hdr.internal_header.matrix_l5;
+    }
+    action increment_l6_count()
+    {
+        diagonal_index_in_bytes = (bit<3>) hdr.internal_header.iterator_r; // get the current line index
+        diagonal_index_in_bytes = diagonal_index_in_bytes + 7;             // get the corresponding diagonal index from last line
+        diagonal_index_in_bits = (bit<8>) diagonal_index_in_bytes << 3;    // multiply by 8 to shift in bytes resolution
+        temp_count = ((bit<8>) (hdr.internal_header.matrix_l5 >> diagonal_index_in_bits) & 0xff) + 1; // compute the new value to write in the matrix
+
+        diagonal_index_in_bits =  (bit<8>)hdr.internal_header.iterator_r << 3; // calculate where to put the resulting count in the matrix line
+        temp_value = ((bit<64>) temp_count) << diagonal_index_in_bits; // calculate the value over 64b
+
+        hdr.internal_header.matrix_l6 = temp_value | hdr.internal_header.matrix_l6;
+    }
+    action increment_l7_count()
+    {
+        diagonal_index_in_bytes = (bit<3>) hdr.internal_header.iterator_r; // get the current line index
+        diagonal_index_in_bytes = diagonal_index_in_bytes + 7;             // get the corresponding diagonal index from last line
+        diagonal_index_in_bits = (bit<8>) diagonal_index_in_bytes << 3;    // multiply by 8 to shift in bytes resolution
+        temp_count = ((bit<8>) (hdr.internal_header.matrix_l6 >> diagonal_index_in_bits) & 0xff) + 1; // compute the new value to write in the matrix
+
+        diagonal_index_in_bits =  (bit<8>)hdr.internal_header.iterator_r << 3; // calculate where to put the resulting count in the matrix line
+        temp_value = ((bit<64>) temp_count) << diagonal_index_in_bits; // calculate the value over 64b
+
+        hdr.internal_header.matrix_l7 = temp_value | hdr.internal_header.matrix_l7;
+    }
+    table increment_count
+    {
+        key = 
+        {
+            hdr.internal_header.iterator_l: ternary;
+            hdr.internal_header.iterator_r: ternary;
+        }
+        actions = 
+        {
+            set_l0_count;
+            set_l1_first;
+            set_l2_first;
+            set_l3_first;
+            set_l4_first;
+            set_l5_first;
+            set_l6_first;
+            set_l7_first;
+            increment_l1_count;
+            increment_l2_count;
+            increment_l3_count;
+            increment_l4_count;
+            increment_l5_count;
+            increment_l6_count;
+            increment_l7_count;
+            NoAction;
+        }
+        default_action = NoAction();
+    }
+
+    apply {
+        increment_count.apply();
+    }
+}
 control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
@@ -262,14 +421,20 @@ control MyIngress(inout headers hdr,
     }
  
     apply {
-//        dummy_for_rp_test.apply();
         if(hdr.type_header.input_or_internal == 0){
            convert_to_internal();
         } else {
             hdr.internal_header.setValid();
             get_strA_char.apply();
             get_strB_char.apply();
+            
+            if (meta.charA == meta.charB)
+            {
+                IncrementCount.apply(hdr, meta, standard_metadata);
+            }
             test.apply();
+            dummy_for_rp_test.apply();
+
             hdr.internal_header.iterator_r = hdr.internal_header.iterator_r + 1;
             if(hdr.internal_header.iterator_r == 8){
                 hdr.internal_header.iterator_r = 0;
@@ -283,6 +448,7 @@ control MyIngress(inout headers hdr,
         }
     }
 }
+
 
 /*************************************************************************
 ****************  E G R E S S   P R O C E S S I N G   *******************
