@@ -36,8 +36,6 @@ struct metadata {
     /* empty */
     bit<8>  charA;
     bit<8>  charB;
-    bit<8>  strA_idx;
-    bit<8>  strB_idx;
 }
 
 struct headers {
@@ -98,69 +96,67 @@ control MyIngress(inout headers hdr,
                   inout standard_metadata_t standard_metadata) {
 
     action get_strA_char0(){
-        meta.charA = hdr.input_header.strA[7:0];
-    }
-
-    action get_strA_char1(){
-        meta.charA = hdr.input_header.strA[15:8];
-
-    }
-
-    action get_strA_char2(){
-        meta.charA = hdr.input_header.strA[23:16];
-    }
-
-    action get_strA_char3(){
-        meta.charA = hdr.input_header.strA[31:24];
-    }
-
-    action get_strA_char4(){
-        meta.charA = hdr.input_header.strA[39:32];
-    }
-
-    action get_strA_char5(){
-        meta.charA = hdr.input_header.strA[47:40];
-    }
-
-    action get_strA_char6(){
-        meta.charA = hdr.input_header.strA[55:48];
-    }
-
-    action get_strA_char7(){
         meta.charA = hdr.input_header.strA[63:56];
     }
 
+    action get_strA_char1(){
+        meta.charA = hdr.input_header.strA[55:48];
+    }
+
+    action get_strA_char2(){
+        meta.charA = hdr.input_header.strA[47:40];
+    }
+
+    action get_strA_char3(){
+       meta.charA = hdr.input_header.strA[39:32];
+    }
+
+    action get_strA_char4(){
+        meta.charA = hdr.input_header.strA[31:24];
+    }
+
+    action get_strA_char5(){
+        meta.charA = hdr.input_header.strA[23:16];
+    }
+
+    action get_strA_char6(){
+        meta.charA = hdr.input_header.strA[15:8];
+    }
+
+    action get_strA_char7(){
+       meta.charA = hdr.input_header.strA[7:0];
+    }
+
     action get_strB_char0(){
-        meta.charB = hdr.input_header.strB[7:0];
+        meta.charB = hdr.input_header.strB[63:56];
     }
 
     action get_strB_char1(){
-        meta.charB = hdr.input_header.strB[15:8];
-
-    }
-
-    action get_strB_char2(){
-        meta.charB = hdr.input_header.strB[23:16];
-    }
-
-    action get_strB_char3(){
-        meta.charB = hdr.input_header.strB[31:24];
-    }
-
-    action get_strB_char4(){
-        meta.charB = hdr.input_header.strB[39:32];
-    }
-
-    action get_strB_char5(){
-        meta.charB = hdr.input_header.strB[47:40];
-    }
-
-    action get_strB_char6(){
         meta.charB = hdr.input_header.strB[55:48];
     }
 
+    action get_strB_char2(){
+        meta.charB = hdr.input_header.strB[47:40];
+    }
+
+    action get_strB_char3(){
+        meta.charB = hdr.input_header.strB[39:32];
+    }
+
+    action get_strB_char4(){
+        meta.charB = hdr.input_header.strB[31:24];
+    }
+
+    action get_strB_char5(){
+        meta.charB = hdr.input_header.strB[23:16];
+    }
+
+    action get_strB_char6(){
+        meta.charB = hdr.input_header.strB[15:8];
+    }
+
     action get_strB_char7(){
-        meta.charB = hdr.input_header.strB[63:56];
+        meta.charB = hdr.input_header.strB[7:0];
     }
 
     table get_strA_char{
@@ -239,11 +235,27 @@ control MyIngress(inout headers hdr,
     }
  */
    
- 
+    action dummy_for_rp_test_a(){
+        meta.charB = 0;
+    }
+
+    table dummy_for_rp_test{
+        key = {
+            meta.charA : exact;
+            meta.charB : exact;
+        }
+        actions = {
+            dummy_for_rp_test_a;
+        }
+    }
 
     apply {
+        hdr.internal_header.iterator_r = 1;
+        hdr.internal_header.iterator_l = 2;
         get_strA_char.apply();
         get_strB_char.apply();
+
+//        dummy_for_rp_test.apply();
 
         if(hdr.type_header.input_or_internal == 0){
         //   convert_to_internal();
