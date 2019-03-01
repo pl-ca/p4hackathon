@@ -401,6 +401,7 @@ control MyIngress(inout headers hdr,
         hdr.internal_header.matrix_l5 = 0;
         hdr.internal_header.matrix_l6 = 0;
         hdr.internal_header.matrix_l7 = 0;
+        hdr.type_header.input_or_internal = 1;
 
         do_recirculate();
     }
@@ -426,6 +427,7 @@ control MyIngress(inout headers hdr,
         if(hdr.type_header.input_or_internal == 0){
            convert_to_internal();
         } else {
+            // probably not needed
             hdr.internal_header.setValid();
             
             if (meta.charA == meta.charB)
