@@ -8,6 +8,8 @@
 
 typedef bit<64> string_t;
 
+typedef bit<9>  egressSpec_t;
+
 header hdrtype_t {
     bit<8> input_or_internal;
 }
