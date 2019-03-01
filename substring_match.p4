@@ -17,6 +17,10 @@ header input_t {
     string_t strA;
     string_t strB;
 }
+header output_t {
+    bit<32> highest_count;
+    string_t result;
+}
 
 header internal_t {
     bit<32> iterator_l;
@@ -95,10 +99,10 @@ control IncrementCount(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata)
 {
-    bit<3> diagonal_index_in_bytes;
-    bit<8> diagonal_index_in_bits;
-    bit<8> temp_count;
-    bit<64> temp_value;
+    bit<3> diagonal_index_in_bytes = 0;
+    bit<8> diagonal_index_in_bits = 0;
+    bit<8> temp_count = 0;
+    bit<64> temp_value = 0;
     action set_l0_count(string_t val)
     {
         hdr.internal_header.matrix_l0 = hdr.internal_header.matrix_l0 | val;
@@ -247,7 +251,13 @@ control IncrementCount(inout headers hdr,
     }
 
     apply {
-        increment_count.apply();
+        if (increment_count.apply().hit)
+        {
+            if ((bit<32>) temp_count > hdr.internal_header.highest_count)
+            {
+                hdr.internal_header.highest_count = (bit<32>) temp_count;
+            }
+        }
     }
 }
 control MyIngress(inout headers hdr,
