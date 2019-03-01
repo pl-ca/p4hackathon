@@ -224,6 +224,7 @@ control MyIngress(inout headers hdr,
     }
  
     action convert_to_internal(){
+        hdr.internal_header.setValid();
         hdr.internal_header.iterator_l = 0;
         hdr.internal_header.iterator_r = 0;
         hdr.internal_header.highest_count = 0;
@@ -239,12 +240,20 @@ control MyIngress(inout headers hdr,
         do_recirculate();
     }
  
-   
+    table test {
+        key = {
+            hdr.internal_header.iterator_r : exact;
+            hdr.internal_header.iterator_l : exact;
+        }
+        actions = { NoAction; }
+        default_action = NoAction;
+    }
  
 
     apply {
         get_strA_char.apply();
         get_strB_char.apply();
+        test.apply();
 
         if(hdr.type_header.input_or_internal == 0){
            convert_to_internal();
