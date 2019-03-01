@@ -165,7 +165,7 @@ control MyIngress(inout headers hdr,
 
     table get_strA_char{
         key = {
-            meta.strA_idx: exact;
+            hdr.internal_header.iterator_r : exact;
         }
         actions = {
             get_strA_char0;
@@ -181,7 +181,7 @@ control MyIngress(inout headers hdr,
 
     table get_strB_char{
         key = {
-            meta.strB_idx: exact;
+            hdr.internal_header.iterator_l: exact;
         }
         actions = {
             get_strB_char0;
