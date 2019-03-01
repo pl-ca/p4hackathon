@@ -8,6 +8,8 @@
 
 typedef bit<64> string_t;
 
+typedef bit<9>  egressSpec_t;
+
 header hdrtype_t {
     bit<8> input_or_internal;
 }
@@ -90,7 +92,20 @@ control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
     
+    action test_action(egressSpec_t port) {
+        standard_metadata.egress_spec = port;
+    }
+    table test_table {
+        key = {
+            hdr.type_header.input_or_internal: exact;
+        }
+        actions = {
+            test_action;
+        }
+    }
+
     apply {
+        test_table.apply();
     }
 }
 
