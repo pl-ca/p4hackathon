@@ -22,11 +22,11 @@ net.start()
 
 
 sw = net.get('s1')
-sw.insertTableEntry(table_name='MyIngress.test_table',
-                    match_fields={'hdr.type_header.input_or_internal': 'A'},
-                    action_name='MyIngress.test_action',
-                    action_params={'port': 2}
-                    )
+#sw.insertTableEntry(table_name='MyIngress.test_table',
+#                    match_fields={'hdr.type_header.input_or_internal': 'A'},
+#                    action_name='MyIngress.test_action',
+#                    action_params={'port': 2}
+#                    )
 
 
 

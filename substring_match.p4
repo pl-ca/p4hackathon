@@ -179,9 +179,34 @@ control MyIngress(inout headers hdr,
         }
     }
 
+    table get_strB_char{
+        key = {
+            meta.strB_idx: exact;
+        }
+        actions = {
+            get_strB_char0;
+            get_strB_char1;
+            get_strB_char2;
+            get_strB_char3;
+            get_strB_char4;
+            get_strB_char5;
+            get_strB_char6;
+            get_strB_char7;
+        }
+    }
+
+
+    action do_recirculate(){
+        recirculate(meta);
+    }
+    action do_output(){
+        standard_metadata.egress_spec = port;        
+    }
+
     action convert_to_output(){
         hdr.internal_header.setInvalid();
         hdr.type_header.input_or_internal = 0;
+        do_output();
     }
 
     action update_indices (){
@@ -190,7 +215,9 @@ control MyIngress(inout headers hdr,
             hdr.internal_header.iterator_r = 0;
             hdr.internal_header.iterator_l = hdr.internal_header.iterator_l + 1;
         }
-        if(hdr.internal_header.iterator_l == 8){
+        if (hdr.internal_header.iterator_l < 8){
+            do_recirculate();
+        } else {
             convert_to_output();
         }
     }
@@ -208,29 +235,21 @@ control MyIngress(inout headers hdr,
         hdr.internal_header.matrix_l6 = 0;
         hdr.internal_header.matrix_l7 = 0;
 
+        do_recirculate();
     }
 
-
-
-    table get_strB_char{
-        key = {
-            meta.strB_idx: exact;
-        }
-        actions = {
-            get_strB_char0;
-            get_strB_char1;
-            get_strB_char2;
-            get_strB_char3;
-            get_strB_char4;
-            get_strB_char5;
-            get_strB_char6;
-            get_strB_char7;
-        }
-    }
+   
+ 
 
     apply {
         get_strA_char.apply();
         get_strB_char.apply();
+
+        if(hdr.type_header.input_or_internal == 0){
+            convert_to_internal();
+        } else {
+            update_indices)();
+        }
     }
 }
 
