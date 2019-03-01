@@ -196,7 +196,8 @@ control MyIngress(inout headers hdr,
         recirculate(meta);
     }
     action do_output(){
-        //standard_metadata.egress_spec = port;        
+        //standard_metadata.egress_spec = ;
+        mark_to_drop();        
     }
 
     action convert_to_output(){
@@ -205,7 +206,7 @@ control MyIngress(inout headers hdr,
         do_output();
     }
 
-/*     action update_indices (){
+     action update_indices (){
         hdr.internal_header.iterator_r = hdr.internal_header.iterator_r + 1;
         if(hdr.internal_header.iterator_r == 8){
             hdr.internal_header.iterator_r = 0;
@@ -216,9 +217,10 @@ control MyIngress(inout headers hdr,
         } else {
             convert_to_output();
         }
-    } */
-/* 
+    }
+ 
     action convert_to_internal(){
+        hdr.internal_header.setValid();
         hdr.internal_header.iterator_l = 0;
         hdr.internal_header.iterator_r = 0;
         hdr.internal_header.highest_count = 0;
@@ -233,7 +235,7 @@ control MyIngress(inout headers hdr,
 
         do_recirculate();
     }
- */
+
    
     action dummy_for_rp_test_a(){
         meta.charB = 0;
@@ -249,18 +251,39 @@ control MyIngress(inout headers hdr,
         }
     }
 
+ 
+    table test {
+        key = {
+            hdr.internal_header.iterator_r : exact;
+            hdr.internal_header.iterator_l : exact;
+        }
+        actions = { NoAction; }
+        default_action = NoAction;
+    }
+ 
+
     apply {
         hdr.internal_header.iterator_r = 1;
         hdr.internal_header.iterator_l = 2;
         get_strA_char.apply();
         get_strB_char.apply();
+        test.apply();
 
 //        dummy_for_rp_test.apply();
 
         if(hdr.type_header.input_or_internal == 0){
-        //   convert_to_internal();
+           convert_to_internal();
         } else {
-        //    update_indices();
+            hdr.internal_header.iterator_r = hdr.internal_header.iterator_r + 1;
+            if(hdr.internal_header.iterator_r == 8){
+                hdr.internal_header.iterator_r = 0;
+                hdr.internal_header.iterator_l = hdr.internal_header.iterator_l + 1;
+            }
+            if (hdr.internal_header.iterator_l < 8){
+                do_recirculate();
+            } else {
+                convert_to_output();
+            }
         }
     }
 }
