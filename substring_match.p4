@@ -200,7 +200,7 @@ control MyIngress(inout headers hdr,
         recirculate(meta);
     }
     action do_output(){
-        standard_metadata.egress_spec = port;        
+        //standard_metadata.egress_spec = port;        
     }
 
     action convert_to_output(){
@@ -209,7 +209,7 @@ control MyIngress(inout headers hdr,
         do_output();
     }
 
-    action update_indices (){
+/*     action update_indices (){
         hdr.internal_header.iterator_r = hdr.internal_header.iterator_r + 1;
         if(hdr.internal_header.iterator_r == 8){
             hdr.internal_header.iterator_r = 0;
@@ -220,8 +220,8 @@ control MyIngress(inout headers hdr,
         } else {
             convert_to_output();
         }
-    }
-
+    } */
+/* 
     action convert_to_internal(){
         hdr.internal_header.iterator_l = 0;
         hdr.internal_header.iterator_r = 0;
@@ -237,7 +237,7 @@ control MyIngress(inout headers hdr,
 
         do_recirculate();
     }
-
+ */
    
  
 
@@ -246,9 +246,9 @@ control MyIngress(inout headers hdr,
         get_strB_char.apply();
 
         if(hdr.type_header.input_or_internal == 0){
-            convert_to_internal();
+        //   convert_to_internal();
         } else {
-            update_indices)();
+        //    update_indices();
         }
     }
 }

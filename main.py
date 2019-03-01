@@ -25,13 +25,13 @@ sw = net.get('s1')
 
 for i in range(0,7):
     sw.insertTableEntry(table_name='MyIngress.get_strA_char',
-                        match_fields={'meta.strA_idx': i},
+                        match_fields={'hdr.internal_header.iterator_r': i},
                         action_name='MyIngress.get_strA_char'+str(i)
                         )
 
 for i in range(0,7):
     sw.insertTableEntry(table_name='MyIngress.get_strB_char',
-                        match_fields={'meta.strB_idx': i},
+                        match_fields={'hdr.internal_header.iterator_l': i},
                         action_name='MyIngress.get_strB_char'+str(i)
                         )
 
