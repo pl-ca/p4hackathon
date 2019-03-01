@@ -44,8 +44,9 @@ struct metadata {
 
 struct headers {
     hdrtype_t  type_header;
-    input_t    input_header;
     internal_t internal_header;
+    input_t    input_header;
+    output_t output_header;
 }
 
 /*************************************************************************
@@ -62,10 +63,14 @@ parser MyParser(packet_in packet,
         transition select(hdr.type_header.input_or_internal) {
             0: parse_input;
             1: parse_internal;
-            //default: parse_reject;
+            default: parse_output;
         }
     }
 
+    state parse_output {
+        packet.extract(hdr.output_header);
+        transition parse_input;
+    }
     state parse_internal {
         packet.extract(hdr.internal_header);
         transition parse_input;
@@ -365,11 +370,13 @@ control MyIngress(inout headers hdr,
         recirculate(meta);
     }
     action do_output(){
-        //standard_metadata.egress_spec = ;
-        mark_to_drop();        
+        standard_metadata.egress_spec = 1;
+        // mark_to_drop();        
     }
 
     action convert_to_output(){
+        hdr.output_header.setValid();
+        hdr.output_header.highest_count = hdr.internal_header.highest_count;
         hdr.internal_header.setInvalid();
         hdr.type_header.input_or_internal = 0;
         do_output();
@@ -431,7 +438,7 @@ control MyIngress(inout headers hdr,
             {
                 IncrementCount.apply(hdr, meta, standard_metadata);
             }
-            test.apply();
+            // test.apply();
 
             hdr.internal_header.iterator_r = hdr.internal_header.iterator_r + 1;
             if(hdr.internal_header.iterator_r == 8){
@@ -476,6 +483,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.type_header);
         packet.emit(hdr.internal_header);
         packet.emit(hdr.input_header);
+        packet.emit(hdr.output_header);
     }
 }
 
