@@ -18,7 +18,7 @@ header input_t {
     string_t strB;
 }
 header output_t {
-    bit<32> highest_count;
+    bit<8> highest_count;
     string_t result;
 }
 
@@ -44,9 +44,9 @@ struct metadata {
 
 struct headers {
     hdrtype_t  type_header;
+    output_t output_header;
     internal_t internal_header;
     input_t    input_header;
-    output_t output_header;
 }
 
 /*************************************************************************
@@ -376,7 +376,7 @@ control MyIngress(inout headers hdr,
 
     action convert_to_output(){
         hdr.output_header.setValid();
-        hdr.output_header.highest_count = hdr.internal_header.highest_count;
+        hdr.output_header.highest_count = (bit<8>) hdr.internal_header.highest_count;
         hdr.internal_header.setInvalid();
         hdr.type_header.input_or_internal = 0;
         do_output();
@@ -481,9 +481,9 @@ control MyComputeChecksum(inout headers  hdr, inout metadata meta) {
 control MyDeparser(packet_out packet, in headers hdr) {
     apply {
         packet.emit(hdr.type_header);
+        packet.emit(hdr.output_header);
         packet.emit(hdr.internal_header);
         packet.emit(hdr.input_header);
-        packet.emit(hdr.output_header);
     }
 }
 
