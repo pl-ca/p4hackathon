@@ -417,18 +417,15 @@ control MyIngress(inout headers hdr,
     }
  
     apply {
-        get_strA_char.apply();
-        get_strB_char.apply();
-        if (meta.charA == meta.charB)
-        {
-            IncrementCount.apply(hdr, meta, standard_metadata);
-        }
 
         if(hdr.type_header.input_or_internal == 0){
            convert_to_internal();
         } else {
             // probably not needed
             hdr.internal_header.setValid();
+
+            get_strA_char.apply();
+            get_strB_char.apply();
             
             if (meta.charA == meta.charB)
             {
