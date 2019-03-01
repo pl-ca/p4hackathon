@@ -62,7 +62,7 @@ parser MyParser(packet_in packet,
         transition select(hdr.type_header.input_or_internal) {
             0: parse_input;
             1: parse_internal;
-            default: parse_reject;
+            //default: parse_reject;
         }
     }
 
@@ -420,19 +420,31 @@ control MyIngress(inout headers hdr,
         }
     }
 
-    apply {
-        get_strA_char.apply();
-        get_strB_char.apply();
-        if (meta.charA == meta.charB)
-        {
-            IncrementCount.apply(hdr, meta, standard_metadata);
+ 
+    table test {
+        key = {
+            hdr.internal_header.iterator_r : exact;
+            hdr.internal_header.iterator_l : exact;
         }
-
-       dummy_for_rp_test.apply();
-
+        actions = { NoAction; }
+        default_action = NoAction;
+    }
+ 
+    apply {
         if(hdr.type_header.input_or_internal == 0){
            convert_to_internal();
         } else {
+            hdr.internal_header.setValid();
+            get_strA_char.apply();
+            get_strB_char.apply();
+            
+            if (meta.charA == meta.charB)
+            {
+                IncrementCount.apply(hdr, meta, standard_metadata);
+            }
+            test.apply();
+            dummy_for_rp_test.apply();
+
             hdr.internal_header.iterator_r = hdr.internal_header.iterator_r + 1;
             if(hdr.internal_header.iterator_r == 8){
                 hdr.internal_header.iterator_r = 0;
