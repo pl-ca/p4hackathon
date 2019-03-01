@@ -34,10 +34,10 @@ for v1model, this is accomplished with the method recirculate(meta)
 in two windows, do make run, and make h1  
 in the make h1 window, use scapy, and run: send(IP(dst="1.2.3.4")/ICMP())
 
-to text external packet  
+to test external packet  
 scapy: sendp('\x00' + 'A1234567' + 'B1234567')
 
-to text internal packet  
+to test internal packet  
 scapy: sendp('\x01' + 'A1234567' + 'B1234567')
 
 to test reject packet  
