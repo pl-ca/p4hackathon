@@ -405,21 +405,6 @@ control MyIngress(inout headers hdr,
         do_recirculate();
     }
 
-   
-    action dummy_for_rp_test_a(){
-        meta.charB = 0;
-    }
-
-    table dummy_for_rp_test{
-        key = {
-            meta.charA : exact;
-            meta.charB : exact;
-        }
-        actions = {
-            dummy_for_rp_test_a;
-        }
-    }
-
  
     table test {
         key = {
@@ -431,19 +416,23 @@ control MyIngress(inout headers hdr,
     }
  
     apply {
+        get_strA_char.apply();
+        get_strB_char.apply();
+        if (meta.charA == meta.charB)
+        {
+            IncrementCount.apply(hdr, meta, standard_metadata);
+        }
+
         if(hdr.type_header.input_or_internal == 0){
            convert_to_internal();
         } else {
             hdr.internal_header.setValid();
-            get_strA_char.apply();
-            get_strB_char.apply();
             
             if (meta.charA == meta.charB)
             {
                 IncrementCount.apply(hdr, meta, standard_metadata);
             }
             test.apply();
-            dummy_for_rp_test.apply();
 
             hdr.internal_header.iterator_r = hdr.internal_header.iterator_r + 1;
             if(hdr.internal_header.iterator_r == 8){
